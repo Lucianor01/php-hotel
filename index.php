@@ -55,6 +55,36 @@ $hotels = [
 
 ];
 
+$hotelsFilter = $hotels;
+
+if (isset($_GET['parking']) && $_GET['parking'] === 'available') {
+
+  $hotelsWithParking = [];
+
+  foreach ($hotels as $elem) {
+    if ($elem['parking']) {
+      $hotelsWithParking[] = $elem;
+    }
+  }
+
+  $hotelsFilter = $hotelsWithParking;
+}
+
+if (isset($_GET['voteInput']) && $_GET['voteInput'] !== '') {
+
+  $hotelsWithVote = [];
+
+  foreach ($hotelsFilter as $elem) {
+    if ($elem['vote'] >= $_GET['voteInput']) {
+      $hotelsWithVote[] = $elem;
+    }
+  }
+
+  $hotelsFilter = $hotelsWithVote;
+}
+
+// var_dump($hotelsFilter);
+
 ?>
 <!-- HTML -->
 <!DOCTYPE html>
@@ -70,9 +100,27 @@ $hotels = [
 
 <body>
 
-  <div class="container">
+  <div class="container mt-3">
+    <!-- FILTRO  -->
+    <form action="index.php" method="GET">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label for="parking" class="form-label">Filter by Parking:</label>
+          <select class="form-select" name="parking" id="parking">
+            <option value="allHotels">All Hotels</option>
+            <option value="available">Hotels with Parking</option>
+          </select>
+        </div>
+        <div class="col-md-4 align-self-end">
+          <input type="number" min="1" max="5" name="voteInput" class="form-control">
+        </div>
+        <div class="col-md-4 align-self-end">
+          <button type="submit" class="btn btn-primary mt-3">Filter</button>
+        </div>
+    </form>
+
     <!-- TABELLA -->
-    <table class="table">
+    <table class="table table-info  table-hover table-bordered  border-primary text-center mt-4">
       <thead>
         <tr>
           <th>Name</th>
@@ -82,10 +130,10 @@ $hotels = [
           <th>Distance to Center</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="table-group-divider border-primary">
         <?php
         //? CICLO PER STAMPARE I DATI NELLA TABELLA
-        foreach ($hotels as $elem) {
+        foreach ($hotelsFilter as $elem) {
 
           echo "<tr>";
           echo    "<td>" . $elem['name'] . "</td>";
